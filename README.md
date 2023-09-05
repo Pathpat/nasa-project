@@ -26,6 +26,11 @@ Open [http://localhost:8000](http://localhost:8000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
+### `npm run jest`
+
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://jestjs.io/docs/getting-started) for more information.
+
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
@@ -35,3 +40,7 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 You can learn more in the [To get started with Node](https://nodejs.org/en).
 
 To learn Node, check out the [Node documentation](https://nodejs.org/en/docs).
+
+You can learn more in the [To get started with Jest](https://jestjs.io/).
+
+To learn Jest, check out the [Jest documentation](https://jestjs.io/docs).
