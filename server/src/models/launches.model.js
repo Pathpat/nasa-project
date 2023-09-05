@@ -45,7 +45,7 @@ async function getAllLaunches() {
     });
 }
 
-//save launches and create a strict rule  about the name of planets.
+//save launches and create a strict rule  about the name of planets.We use findOneAndUpdate for hide informations.
 async function saveLaunch(launch) {
     const planet = await planets.findOne({
         keplerName: launch.target,
@@ -53,26 +53,26 @@ async function saveLaunch(launch) {
     if (!planet) {
         throw new Error('No matching planet found')
     }
-    await launchesDatabase.updateOne({
+    await launchesDatabase.findOneAndUpdate({
         flightNumber: launch.flightNumber,
     }, launch, {
         upsert: true
     });
 }
 
-function addNewLaunch(launch) {
-    latestFlightNumber++;
-    launches.set(
-        latestFlightNumber,
-        Object.assign(launch, {
-            success: true,
-            upcoming: true,
-            customers: ['zero to mastery', 'NASA'],
-            flightNumber: latestFlightNumber,
+//Insert launch in db
+async function scheduleNewLaunch(launch) {
+    const newFlightNumber = await getLatestFlightNumber() + 1;
+    const newLaunch = Object.assign(launch, {
+        success: true,
+        upcoming: true,
+        customers: ['zero to mastery', 'NASA'],
+        flightNumber: newFlightNumber,
+    });
 
-        })
-    );
+    await saveLaunch(newLaunch);
 }
+
 
 function abortLaunchById(launchId) {
     const aborted =  launches.get(launchId);
@@ -84,6 +84,6 @@ function abortLaunchById(launchId) {
 module.exports = {
     existsLaunchWithId,
     getAllLaunches,
-    addNewLaunch,
+    scheduleNewLaunch,
     abortLaunchById
 }
