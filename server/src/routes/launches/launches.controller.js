@@ -1,13 +1,13 @@
 const {getAllLaunches,
-        addNewLaunch,
         existsLaunchWithId,
-        abortLaunchById } =  require('../../models/launches.model');
+        abortLaunchById, 
+        scheduleNewLaunch} =  require('../../models/launches.model');
 
 async function httpGetAllLaunches(req, res) {
    return res.status(200).json(Array.from(await getAllLaunches()));
 }
 
-function httpAddNewLaunch(req, res) {
+async function httpAddNewLaunch(req, res) {
     const launch = req.body;
 
     if(!launch.mission || !launch.rocket || !launch.launchDate || !launch.target) {
@@ -23,7 +23,8 @@ function httpAddNewLaunch(req, res) {
         });
     }
 
-    addNewLaunch(launch);
+    await scheduleNewLaunch(launch);
+    console.log(launch);
     return res.status(201).json(launch);
 }
 
