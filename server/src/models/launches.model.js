@@ -1,4 +1,5 @@
 const axios = require('axios');
+require('dotenv').config();
 
 const launchesDatabase = require('./launches.mongo');
 const planets = require('./planets.mongo');
@@ -6,21 +7,7 @@ const planets = require('./planets.mongo');
 const DEFAULT_FLIGHT_NUMBER = 100;
 
 
-const launch = {
-    flightNumber: 100,
-    mission:'Kepler exploration X',
-    rocket: 'Explorer IS1',
-    launchDate: new Date('December 27, 2030'),
-    target: 'Kepler-442 b',
-    customer: ['NASA','ZTM'],
-    upcoming: true,
-    success: true,
-}
-
-
-saveLaunch(launch);
-
-const SPACEX_API_URL = 'https://api.spacexdata.com/v4/launches/query';
+const SPACEX_API_URL = process.env.SPACEX_API_URL;
 
 async function populateLaunches() {
     console.log("Downloading launch data...");
@@ -107,12 +94,13 @@ async function getLatestFlightNumber() {
 }
 
 //list launches.
-async function getAllLaunches() {
+async function getAllLaunches(skip, limit) {
     return await launchesDatabase
-    .find({},{
-        '_id': 0,
-        '__v':0
-    });
+    .find({},{ '_id': 0, '__v':0 })
+    .sort({flightNumber: 1})
+    .skip(skip)
+    .limit(limit)
+    
 }
 
 //save launches and create a strict rule  about the name of planets.We use findOneAndUpdate for hide informations.
