@@ -45,6 +45,11 @@ async function populateLaunches() {
         }
     });
 
+    if(response.status !== 200) {
+        console.log('Problem downloading launch data');
+        throw new Error('Launch data downloaded failed');
+    }
+
     const launchDocs = response.data.docs;
     for(const launchDoc of launchDocs) {
         const payloads = launchDoc['payloads'];
@@ -62,7 +67,7 @@ async function populateLaunches() {
             customers: customers,
         };
 
-        //TODO: populate launches collection...
+       await saveLaunch(launch);
     }
 }
 
@@ -112,13 +117,7 @@ async function getAllLaunches() {
 
 //save launches and create a strict rule  about the name of planets.We use findOneAndUpdate for hide informations.
 async function saveLaunch(launch) {
-    const planet = await planets.findOne({
-        keplerName: launch.target,
-    });
-    if (!planet) {
-        throw new Error('No matching planet found')
-    }
-    await launchesDatabase.findOneAndUpdate({
+       await launchesDatabase.findOneAndUpdate({
         flightNumber: launch.flightNumber,
     }, launch, {
         upsert: true
@@ -127,6 +126,12 @@ async function saveLaunch(launch) {
 
 //Insert launch in db
 async function scheduleNewLaunch(launch) {
+    const planet = await planets.findOne({
+        keplerName: launch.target,
+    });
+    if (!planet) {
+        throw new Error('No matching planet found')
+    }
     const newFlightNumber = await getLatestFlightNumber() + 1;
     const newLaunch = Object.assign(launch, {
         success: true,
